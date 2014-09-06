@@ -22,9 +22,18 @@ describe('OpenCyc', function() {
 		});
 	});
 	it('should obtain concept', function(done) {
-		cyc.get('Mx4rwRRVd5wpEbGdrcN5Y29ycA', function(err, concept){
-			concept.label.should.equal('the Batman movie series');
-			concept.classes.should.containEql('movie series product');
+		cyc.get('Mx4rwRRVd5wpEbGdrcN5Y29ycA', function(err, concept) {
+			concept.instances[0].label.should.equal('the Batman movie series');
+			concept.subtypes[0].label.should.equal('movie series product');
+			done();
+		});
+	});
+	it('should list instances of concept', function(done) {
+		cyc.get('Mx4rv9t9NFMnQdeStuhcY3fjLA', function(err, concept) {
+			concept.instances.should.containEql({
+				id: 'MX4RVPIM1PWPEBGDRCN5Y29YCA',
+				label: 'Royston Wood'
+			});
 			done();
 		});
 	});

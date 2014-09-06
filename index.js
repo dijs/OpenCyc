@@ -59,13 +59,25 @@ module.exports.get = function(id, callback) {
 					callback(err);
 				} else {
 					var rdf = data['RDF:RDF'];
-					var concept = rdf[Object.keys(rdf)[3]][0];
+					var classId = rdf['OWL:CLASS'][0]['$']['RDF:ABOUT'].toUpperCase();
+					var thing = rdf['OWL:THING'];
 					callback(null, {
 						version: rdf['OWL:ONTOLOGY'][0]['OWL:VERSIONINFO'][0],
-						label: concept['RDFS:LABEL'][0]._,
-						comment: stripHtml(concept['RDFS:COMMENT'][0]._),
-						classes: _.map(rdf['OWL:CLASS'], function(clazz) {
-							return clazz['RDFS:LABEL'][0]._;
+						thing: !thing ? null : {
+							label: thing[0]['RDFS:LABEL'][0]._,
+							comment: stripHtml(thing[0]['RDFS:COMMENT'][0]._)
+						},
+						subtypes: _.map(rdf['OWL:CLASS'], function(type) {
+							return {
+								id: type.$['RDF:ABOUT'].toUpperCase(),
+								label: type['RDFS:LABEL'][0]._
+							};
+						}),
+						instances: _.map(rdf[classId], function(instance) {
+							return {
+								id: instance.$['RDF:ABOUT'].toUpperCase(),
+								label: instance['RDFS:LABEL'][0]._
+							};
 						})
 					});
 				}
